@@ -1,0 +1,38 @@
++-----------------------+  
+|      Dispenser        |  
++-----------------------+  
+| - numberOfItems: int  |  
+| - cost: int           |  
++-----------------------+  
+| + Dispenser()         |  
+| + Dispenser(int, int) |  
+| + getNoOfItems(): int |  
+| + getCost(): int      |  
+| + makeSale(): boolean |  
+| + restock(int): void  |  
++-----------------------+  
+
++----------------------------+    
+|          Register          |  
++----------------------------+    
+| - cashOnHand: int          |  
++----------------------------+  
+| + Register()               |  
+| + Register(int)            |  
+| + getCurrentBalance(): int |  
+| + acceptAmount(int): void  |  
+| + makeSale(int): void      |  
++----------------------------+    
+
++----------------------------+    
+|            Main            |  
++----------------------------+    
+| + main(String[]): void     |  
++----------------------------+  
+
+
++--------------------------------------------------------------------------------------+
+Relationships
+The Main class interacts with both the Dispenser and Register classes.
+The Dispenser can be assumed to be used for dispensing items whenever a sale is made, showing an indirect relationship with Register.
+There is no inheritance among the classes, so we do not have any arrows or hierarchy in this case.
