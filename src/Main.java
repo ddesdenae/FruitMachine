@@ -61,8 +61,10 @@ public class Main {
                 if (insertedCash >= totalPrice) {  
                     double change = insertedCash - totalPrice; // Calculate change  
                     // Check if the register can give the change  
-                    if (change > cashRegister.getCurrentBalance()) {  
-                        JOptionPane.showMessageDialog(null, "Insufficient change in the register. Please input a smaller amount.");  
+                    if (!cashRegister.canGiveChange(change)) {  
+                        JOptionPane.showMessageDialog(null, "Register has insufficient change. Please input lower amount or exact amount.");  
+                        // Rollback the accepted amount  
+                        cashRegister.acceptAmount(-insertedCash); // Refund the inserted amount  
                     } else {  
                         cashRegister.makeSale(totalPrice); // Make sale  
                         String successMessage = String.format("========================================\n" +  
