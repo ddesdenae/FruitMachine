@@ -1,111 +1,116 @@
-package FruitMachine;
-import java.util.InputMismatchException;  
-import java.util.Scanner;  
+package dddubrico;  
 
+import javax.swing.JOptionPane;  
 
 public class Main {  
     public static void main(String[] args) {  
-        Scanner scanner = new Scanner(System.in);  
-        Register cashRegister = new Register();  
+        Register cashRegister = new Register(500);  // Storing $500 in cents  
 
-        // Define juices options and prices (in cents)  
+        // Define juice options and prices (in dollars)  
         String[] juiceNames = {"Apple Juice", "Orange Juice", "Mango Lassi", "Fruit Punch"};  
-        int[] juicePrices = {800, 1000, 1200, 1500}; // prices in cents  
+        double[] juicePrices = {8.00, 10.00, 12.00, 15.00}; // prices in dollars  
 
         while (true) {  
-            System.out.println("========================================");  
-            System.out.println("          Fruit Juice Machine          ");  
-            System.out.println("========================================");  
-
-            // Display current balance in cash register  
-            System.out.printf("Current balance in cash register: $%.2f%n", cashRegister.getCurrentBalance() / 100.0);  
-            System.out.println();  
-
-            // Display available juices  
-            System.out.println("Available Juices and Prices (in dollars):");  
+            StringBuilder menu = new StringBuilder();  
+            menu.append("========================================\n");  
+            menu.append("          Fruit Juice Machine          \n");  
+            menu.append("========================================\n");  
+            menu.append(String.format("Current balance in cash register: $%.2f\n\n", cashRegister.getCurrentBalance()));  
+            menu.append("Available Juices and Prices:\n");  
             for (int i = 0; i < juiceNames.length; i++) {  
-                System.out.printf("%d. %s - $%.2f%n", (i + 1), juiceNames[i], juicePrices[i] / 100.0);  
+                menu.append(String.format("%d. %s - $%.2f\n", (i + 1), juiceNames[i], juicePrices[i]));  
             }  
-            System.out.println("0. Exit");  
+            menu.append("0. Exit");  
 
-            // Ask user to select a juice  
-            System.out.print("Please select a juice by entering the corresponding number (0-4): ");  
+            // Show options and get user selection  
+            String input = JOptionPane.showInputDialog(menu.toString());  
             int choice;  
+
             try {  
-                choice = scanner.nextInt();  
+                choice = Integer.parseInt(input);  
                 if (choice == 0) {  
-                    System.out.println("Thank you for using the Fruit Juice Machine! Goodbye!");  
+                    JOptionPane.showMessageDialog(null, "Thank you for using the Fruit Juice Machine! Goodbye!");  
                     break; // Exit the loop and terminate the program  
                 }  
 
                 // Validate choice  
                 if (choice < 1 || choice > juiceNames.length) {  
-                    System.out.println("Invalid option. Please try again.");  
+                    JOptionPane.showMessageDialog(null, "Invalid option. Please try again.");  
                     continue;  
                 }  
 
-                int selectedJuicePrice = juicePrices[choice - 1];  
-                System.out.printf("You selected %s. The price is $%.2f. How would you like to pay? (1 for Dollars, 2 for Cents): ",   
-                                  juiceNames[choice - 1], selectedJuicePrice / 100.0);  
-                int paymentMethod = scanner.nextInt();  
+                // Get the quantity of the selected juice  
+                String quantityInput = JOptionPane.showInputDialog(String.format("How many %s would you like to order?", juiceNames[choice - 1]));  
+                int quantity = Integer.parseInt(quantityInput);  
 
-                int totalInserted = 0;  
-                boolean purchaseSuccess = false;  
+                double totalPrice = juicePrices[choice - 1] * quantity; // Calculate total price  
+                String paymentPrompt = String.format("You selected %s. The total price is $%.2f. How would you like to pay? (1 for Dollars, 2 for Cents): ",  
+                        juiceNames[choice - 1], totalPrice);  
+                String paymentMethodInput = JOptionPane.showInputDialog(paymentPrompt);  
+                int paymentMethod = Integer.parseInt(paymentMethodInput);  
+
+                int totalInserted = 0; // Total cash inserted  
+                boolean purchaseSuccess = false; // Track purchase success  
 
                 // Allow up to 2 additional tries to input the correct amount  
                 for (int tries = 0; tries < 3; tries++) {  
-                    int insertedCash;  
-
+                    String insertedCashString;  
+                    double insertedCash; // Store cash as double  
                     // Input for payment method  
-                    if (paymentMethod == 1) {  
-                        System.out.print("Please insert cash in dollars: ");  
-                        insertedCash = (int) (scanner.nextDouble() * 100); // Convert dollars to cents  
-                    } else if (paymentMethod == 2) {  
-                        System.out.print("Please insert cash in cents: ");  
-                        insertedCash = scanner.nextInt();  
+                    if (paymentMethod == 1) { // Payment in dollars  
+                        insertedCashString = JOptionPane.showInputDialog("Please insert cash in dollars: ");  
+                        insertedCash = Double.parseDouble(insertedCashString);  
+                    } else if (paymentMethod == 2) { // Payment in cents  
+                        insertedCashString = JOptionPane.showInputDialog("Please insert cash in cents: ");  
+                        insertedCash = Double.parseDouble(insertedCashString) / 100; // Convert cents to dollars  
                     } else {  
-                        System.out.println("Invalid payment method selected. Please try again.");  
+                        JOptionPane.showMessageDialog(null, "Invalid payment method selected.");  
                         break;  
                     }  
 
-                    totalInserted += insertedCash;  
-                    cashRegister.acceptAmount(insertedCash);  
-                    
-                    if (totalInserted >= selectedJuicePrice) {  
-                        cashRegister.makeSale(selectedJuicePrice);  
-                        System.out.println("========================================");  
-                        System.out.println("       Dispensing Your Juice!          ");  
-                        System.out.println("========================================");  
-                        System.out.println("Thank you for your purchase of " + juiceNames[choice - 1] + "!");  
+                    totalInserted += insertedCash; // Total amount inserted  
+                    cashRegister.acceptAmount(insertedCash); // Accept amount in dollars  
 
-                        // Calculate and return change if any  
-                        int change = totalInserted - selectedJuicePrice;  
-                        if (change > 0) {  
-                            System.out.printf("Your change: $%.2f%n", change / 100.0);  
+                    // Check if enough cash was inserted  
+                    if (totalInserted >= totalPrice) {  
+                        double change = totalInserted - totalPrice; // Calculate change  
+                        // Check if the register can give the change  
+                        if (change > cashRegister.getCurrentBalance()) {  
+                            JOptionPane.showMessageDialog(null, "Insufficient change in the register. Please input a smaller amount.");  
+                            totalInserted = 0; // Reset total inserted for new input  
+                        } else {  
+                            cashRegister.makeSale(totalPrice); // Make sale  
+                            String successMessage = String.format("========================================\n" +  
+                                                "       Dispensing Your Juice!          \n" +  
+                                                "========================================\n" +  
+                                                "Thank you for your purchase of %d %s!\n", quantity, juiceNames[choice - 1]);  
+                            if (change > 0) {  
+                                successMessage += String.format("Your change: $%.2f", change);  
+                            }  
+                            JOptionPane.showMessageDialog(null, successMessage);  
+                            purchaseSuccess = true;  
+                            break;  
                         }  
-                        purchaseSuccess = true;  
-                        break;  
                     } else {  
                         if (tries < 2) { // only ask for more cash on remaining attempts  
-                            System.out.printf("Insufficient funds. Please insert an additional $%.2f: ",   
-                                              (selectedJuicePrice - totalInserted) / 100.0);  
+                            JOptionPane.showMessageDialog(null,  
+                                    String.format("Insufficient funds. Please insert an additional $%.2f.",  
+                                            (totalPrice - totalInserted)));  
                         }  
                     }  
                 }  
 
                 // If purchase was not successful after 3 tries  
                 if (!purchaseSuccess) {  
-                    System.out.printf("Purchase failed. Returning your total deposit of $%.2f.%n", totalInserted / 100.0);  
+                    JOptionPane.showMessageDialog(null,  
+                            String.format("Purchase failed. Returning your total deposit of $%.2f.", totalInserted));  
                 }  
 
-                System.out.println("========================================");  
+                JOptionPane.showMessageDialog(null, "========================================");  
 
-            } catch (InputMismatchException e) {  
-                System.out.println("Invalid option. Please enter a number.");  
-                scanner.next(); // Clear the invalid input  
+            } catch (NumberFormatException e) {  
+                JOptionPane.showMessageDialog(null, "Invalid option. Please enter a number correctly.");  
             }  
         }  
-
-        scanner.close();  
     }  
 }
