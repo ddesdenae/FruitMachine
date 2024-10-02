@@ -25,6 +25,11 @@ public class Register {
 
     // Make a sale and update the cash register balance  
     public void makeSale(double saleAmount) {  
-        cashOnHand -= saleAmount * 100; // Convert dollars to cents and deduct  
+        cashOnHand += saleAmount * 100; // Update cash on hand with the sale amount  
+    }  
+
+    // Method to check if the register can give change  
+    public boolean canGiveChange(double change) {  
+        return change <= getCurrentBalance();  
     }  
 }
