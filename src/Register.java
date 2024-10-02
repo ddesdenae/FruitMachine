@@ -1,35 +1,35 @@
-package dddubrico;  
+package FruitMachine;  
 
 public class Register {  
-    private int cashOnHand; // Cash on hand in cents  
+    private double cashOnHand; // Cash on hand in dollars  
 
     // Default constructor  
     public Register() {  
-        this.cashOnHand = 50000; // Initial cash in cents, represents $500  
+        this.cashOnHand = 500; // Initial cash in dollars  
     }  
 
     // Constructor with parameter  
-    public Register(int cashInDollars) {  
-        this.cashOnHand = cashInDollars * 100; // Store in cents  
+    public Register(double cashInDollars) {  
+        this.cashOnHand = cashInDollars; // Store in dollars  
     }  
 
     // Return the current amount in the cash register in dollars  
     public double getCurrentBalance() {  
-        return cashOnHand / 100.0; // Convert cents to dollars for return  
+        return cashOnHand; // Return the balance directly in dollars  
     }  
 
-    // Receive the amount deposited by the customer in cents  
+    // Receive the amount deposited by the customer in dollars  
     public void acceptAmount(double amountInDollars) {  
-        cashOnHand += amountInDollars * 100; // Convert dollars to cents and add  
+        cashOnHand += amountInDollars; // Add the amount directly  
     }  
 
     // Make a sale and update the cash register balance  
     public void makeSale(double saleAmount) {  
-        cashOnHand += saleAmount * 100; // Update cash on hand with the sale amount  
+        cashOnHand += saleAmount; // Update cash on hand with the sale amount  
     }  
 
     // Method to check if the register can give change  
     public boolean canGiveChange(double change) {  
-        return change <= getCurrentBalance();  
+        return change <= cashOnHand; // Check if the change can be given  
     }  
 }
