@@ -1,15 +1,15 @@
-package dddubrico;  
+package FruitMachine;  
 
 import javax.swing.JOptionPane;  
 
 public class Main {  
     public static void main(String[] args) {  
-        Register cashRegister = new Register(500);  // Storing $500 in cents  
+        Register cashRegister = new Register(500);  // Starting balance of $500  
 
         // Define juice options and prices (in dollars)  
         String[] juiceNames = {"Apple Juice", "Orange Juice", "Mango Lassi", "Fruit Punch"};  
-        double[] juicePrices = {8.00, 10.00, 12.00, 15.00}; // prices in dollars  
-        int[] juiceStocks = {10, 8, 5, 6}; // stocks for each juice  
+        double[] juicePrices = {8.00, 10.00, 12.00, 15.00}; // Prices in dollars  
+        int[] juiceStocks = {10, 8, 5, 6}; // Stocks for each juice  
 
         while (true) {  
             StringBuilder menu = new StringBuilder();  
@@ -54,19 +54,17 @@ public class Main {
                 String insertedCashString = JOptionPane.showInputDialog(String.format("The total price is $%.2f. Please insert cash in dollars: ", totalPrice));  
                 double insertedCash = Double.parseDouble(insertedCashString);  
 
-                // Accept the payment  
-                cashRegister.acceptAmount(insertedCash); // Accept amount in dollars  
-
                 // Check if enough cash was inserted  
                 if (insertedCash >= totalPrice) {  
                     double change = insertedCash - totalPrice; // Calculate change  
+
                     // Check if the register can give the change  
                     if (!cashRegister.canGiveChange(change)) {  
                         JOptionPane.showMessageDialog(null, "Register has insufficient change. Please input lower amount or exact amount.");  
-                        // Rollback the accepted amount  
-                        cashRegister.acceptAmount(-insertedCash); // Refund the inserted amount  
+                        // Transaction cancelled, no need to accept cash  
+                        continue;  
                     } else {  
-                        cashRegister.makeSale(totalPrice); // Make sale  
+                        cashRegister.makeSale(totalPrice); // Make sale and update cash register  
                         String successMessage = String.format("========================================\n" +  
                                 "       Dispensing Your Juice!          \n" +  
                                 "========================================\n" +  
